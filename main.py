@@ -24,7 +24,7 @@ sbj = []
 todo = []
 compl = []
 
-hw_id = 0
+HW_ID = 0
 cur_sbj = Null
 
 
@@ -49,8 +49,8 @@ while True:
 				if cur_sbj != Null:
 					if cur_sbj in sbj:
 						homework = " ".join(tkn[2:])
-						todo.append((str(date.today()), hw_id, cur_sbj, homework, False))
-						hw_id += 1
+						todo.append((str(date.today()), HW_ID, cur_sbj, homework, False))
+						HW_ID += 1
 					else:
 						print("Invalid Subject")
 				else:
@@ -188,7 +188,7 @@ while True:
 				"subjects": sbj,
 				"todo": todo,
 				"completed": compl,
-				"hw-id": hw_id,
+				"hw-id": HW_ID,
 			}
 			with open(tkn[1], 'w') as fbj:
 				json.dump(data, fbj)
@@ -203,12 +203,12 @@ while True:
 				sbj = data["subjects"]
 				todo = [i for i in map(lambda x: [x[0], x[1], x[2], x[3], False], data["todo"])]
 				compl = [i for i in map(lambda x: [x[0], x[1], x[2], x[3], False], data["completed"])]
-				hw_id = data["hw-id"]
+				HW_ID = data["hw-id"]
 			elif data["version"] == 1:
 				sbj = data["subjects"]
 				todo = data["todo"]
 				compl = data["completed"]
-				hw_id = data["hw-id"]
+				HW_ID = data["hw-id"]
 			else:
 				print("Incompatable version")
 		else:
@@ -219,7 +219,7 @@ while True:
 		print(f"Subjects: {sbj}")
 		print(f"TODO: {todo}")
 		print(f"FINISHED: {compl}")
-		print(f"HW ID: {hw_id}")
+		print(f"HW ID: {HW_ID}")
 		print(f"Current Subj: {'<Null>' if cur_sbj == Null else cur_sbj}")
 	elif check(0) == "HELP":
 		print(
