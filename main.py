@@ -29,7 +29,11 @@ cur_sbj = Null
 
 
 while True:
-	inp = input("\n#>>")
+	try:
+		inp = input("\n#>>")
+	except KeyboardInterrupt:
+		print()
+		break
 	tkn = inp.split(" ")
 	check = lambda ind: Null if ind >= len(tkn) else tkn[ind].upper()
 	
@@ -162,12 +166,12 @@ while True:
 	elif check(0) == "TODO":
 		print("Date | Homework ID | Status | Subject | Homework")
 		# statics gets printed first regardless of date
-		for date, hw_id, subj, name, static in todo:
+		for hw_date, hw_id, subj, name, static in todo:
 			if static:
-				print(f"{date}{' '*(13-len(date))}{hw_id}{' '*(4-len(str(hw_id)))}{'STATIC'}{'  '}{subj}{' '*(2+len(max(sbj, key=lambda s: len(s)))-len(subj))}{name}")
-		for date, hw_id, subj, name, static in todo:
+				print(f"{hw_date}{' '*(13-len(hw_date))}{hw_id}{' '*(4-len(str(hw_id)))}{'STATIC'}{'  '}{subj}{' '*(2+len(max(sbj, key=lambda s: len(s)))-len(subj))}{name}")
+		for hw_date, hw_id, subj, name, static in todo:
 			if not static:
-				print(f"{date}{' '*(13-len(date))}{hw_id}{' '*(4-len(str(hw_id)))}{'      '}{'  '}{subj}{' '*(2+len(max(sbj, key=lambda s: len(s)))-len(subj))}{name}")
+				print(f"{hw_date}{' '*(13-len(hw_date))}{hw_id}{' '*(4-len(str(hw_id)))}{'      '}{'  '}{subj}{' '*(2+len(max(sbj, key=lambda s: len(s)))-len(subj))}{name}")
 	elif check(0) == "FINISHED":
 		print("Date | Homework ID | Subject | Homework")
 		for i in compl:
@@ -209,6 +213,8 @@ while True:
 				print("Incompatable version")
 		else:
 			print("Empty Value")
+	elif check(0) == "QUIT":
+		break
 	elif check(0) == "INTERNAL":
 		print(f"Subjects: {sbj}")
 		print(f"TODO: {todo}")
@@ -218,22 +224,26 @@ while True:
 	elif check(0) == "HELP":
 		print(
 			"""
-			******** Help Commands ********
-			ADD SUBJECT - To add subjects
-			ADD HW - To add homeworks under the specified subject
-			EDIT SUBJECT - Change the name of the subjects
-			EDIT HW - Change the assignment name of the homework
-			SET STATIC - Sets the homework status to static (the homework will be pinned and to signify for longterm/statuses/super long projects)
-			SET UNSTATIC - Sets the homework status to not static
-			INTO - Switches the specicified subject to that subject from this command
-			FINISH - Using the Homework ID parameter to move that Homework into the finished lists from the TODO lists
-			UNDO - Using the Homework ID parameter to move back the Homework from the finished lists to TODO lists
-			TODO - Shows the todo lists
-			FINISHED - Shows the finished lists
-			SAVE - Saves the current state to a file (JSON)
-			LOAD - Loads the save file (JSON)
-			INTERNAL - Displays the internal information for debugging purposes
-			HELP - Prints the information of a list of commands
+	******** Help Commands ********
+	
+	ADD SUBJECT  - To add subjects
+	ADD HW       - To add homeworks under the specified subject
+	EDIT SUBJECT - Change the name of the subjects
+	EDIT HW      - Change the assignment name of the homework
+	SET STATIC   - Sets the homework status to static (the homework will be pinned and to signify for longterm/statuses/super long projects)
+	SET UNSTATIC - Sets the homework status to not static
+	INTO         - Switches the specicified subject to that subject from this command
+	FINISH       - Using the Homework ID parameter to move that Homework into the finished lists from the TODO lists
+	UNDO         - Using the Homework ID parameter to move back the Homework from the finished lists to TODO lists
+	TODO         - Shows the todo lists
+	FINISHED     - Shows the finished lists
+	SAVE         - Saves the current state to a file (JSON)
+	LOAD         - Loads the save file (JSON)
+	QUIT         - Quits the program (WARNING: THE FILES WILL NOT SAVE)
+	INTERNAL     - Displays the internal information for debugging purposes
+	HELP         - Prints the information of a list of commands
+	
+	_______________________________
 			"""
 		)
 	else:
