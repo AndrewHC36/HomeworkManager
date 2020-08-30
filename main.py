@@ -1,12 +1,6 @@
 from datetime import date
 import json
 
-class Null:
-	def __str__():
-		return "<Null>"
-	def __repr__():
-		return "<Null>"
-
 
 E00_SYNTAX = "Syntax Error"
 E01_INV_CMD = "Invalid/Unkown Command"
@@ -25,7 +19,8 @@ todo = []
 compl = []
 
 HW_ID = 0
-cur_sbj = Null
+cur_sbj = None
+loaded_fname = None
 
 
 while True:
@@ -35,18 +30,18 @@ while True:
 		print()
 		break
 	tkn = inp.split(" ")
-	check = lambda ind: Null if ind >= len(tkn) else tkn[ind].upper()
+	check = lambda ind: None if ind >= len(tkn) else tkn[ind].upper()
 	
 	if check(0) == "ADD":
 		if check(1) == "SUBJECT":
-			if check(2) != Null:
+			if check(2) != None:
 				subject = " ".join(tkn[2:])
 				sbj.append(subject)
 			else:
 				print("Empty Value")
 		elif check(1) == "HW":
-			if check(2) != Null:
-				if cur_sbj != Null:
+			if check(2) != None:
+				if cur_sbj != None:
 					if cur_sbj in sbj:
 						homework = " ".join(tkn[2:])
 						todo.append((str(date.today()), HW_ID, cur_sbj, homework, False))
@@ -61,9 +56,9 @@ while True:
 			print(E01_INV_CMD)
 	elif check(0) == "EDIT":
 		if check(1) == "SUBJECT":  # edit subject <target name> <new name>
-			if check(2) != Null:
+			if check(2) != None:
 				if sbj.count(check(2)) > 0:
-					if check(3) != Null:
+					if check(3) != None:
 						sbj[sbj.index(check(2))] = check(3)
 					else:
 						print("Subject new name not found.")
@@ -72,7 +67,7 @@ while True:
 			else:
 				print("Empty subject name")
 		elif check(1) == "HW":  # edit hw <homework id> <new name>
-			if check(2) != Null:
+			if check(2) != None:
 				try:
 					hw_id = int(check(2))
 				except:
@@ -81,7 +76,7 @@ while True:
 					ids = [i for i in map(lambda x: x[1], todo)]
 					if ids.count(hw_id) > 0:
 						ind = ids.index(id_no)
-						if check(3) != Null:
+						if check(3) != None:
 							todo[ind][3] = check(3)
 						else:
 							print("Empty new name for the homework")
@@ -93,7 +88,7 @@ while True:
 			print(E01_INV_CMD)
 	elif check(0) == "SET":
 		if check(1) == "STATIC":  # set static <hw id>
-			if check(2) != Null:
+			if check(2) != None:
 				try:
 					hw_id = int(check(2))
 				except:
@@ -108,7 +103,7 @@ while True:
 			else:
 				print("Empty homework ID.")
 		elif check(1) == "UNSTATIC":  # set unstatic <hw id>
-			if check(2) != Null:
+			if check(2) != None:
 				try:
 					hw_id = int(check(2))
 				except:
@@ -125,7 +120,7 @@ while True:
 		else:
 			print(E01_INV_CMD)
 	elif check(0) == "INTO":
-		if check(1) != Null:
+		if check(1) != None:
 			subject = " ".join(tkn[1:])
 			if subject in sbj:
 				cur_sbj = subject
@@ -134,7 +129,7 @@ while True:
 		else:
 			print("Empty Value")
 	elif check(0) == "FINISH":
-		if check(1) != Null:
+		if check(1) != None:
 			if check(1).isdigit():
 				id_no = int(check(1))
 				ids = [i for i in map(lambda x: x[1], todo)]
@@ -149,7 +144,7 @@ while True:
 		else:
 			print("Empty Value")
 	elif check(0) == "UNDO":
-		if check(1) != Null:
+		if check(1) != None:
 			if check(1).isdigit():
 				id_no = int(check(1))
 				ids = [i for i in map(lambda x: x[1], compl)]
@@ -177,7 +172,7 @@ while True:
 		for i in compl:
 			print(i)
 	elif check(0) == "SAVE":
-		if check(1) != Null:
+		if check(1) != None:
 			"""
 			Data Serialization (Save File) Version IDs
 			0 - Original one
@@ -192,13 +187,34 @@ while True:
 			}
 			with open(tkn[1], 'w') as fbj:
 				json.dump(data, fbj)
+			loaded_fname = tkn[1]
 		else:
 			print("Empty Value")
+	elif check(0) == "RESAVE":
+		if loaded_fname != None:
+			"""
+			Data Serialization (Save File) Version IDs
+			0 - Original one
+			1 - Added static state for homework
+			"""
+			data = {
+				"version": 1,
+				"subjects": sbj,
+				"todo": todo,
+				"completed": compl,
+				"hw-id": HW_ID,
+			}
+			with open(loaded_fname, 'w') as fbj:
+				json.dump(data, fbj)
+		else:
+			print("Cannot find the cached file name")
 	elif check(0) == "LOAD":
-		if check(1) != Null:
+		if check(1) != None:
 			data = {}
 			with open(tkn[1], 'r') as fbj:
 				data = json.load(fbj)
+			loaded_fname = tkn[1]
+			
 			if data["version"] == 0:  # version 0 does not support static, so it defaults to False
 				sbj = data["subjects"]
 				todo = [i for i in map(lambda x: [x[0], x[1], x[2], x[3], False], data["todo"])]
@@ -220,7 +236,7 @@ while True:
 		print(f"TODO: {todo}")
 		print(f"FINISHED: {compl}")
 		print(f"HW ID: {HW_ID}")
-		print(f"Current Subj: {'<Null>' if cur_sbj == Null else cur_sbj}")
+		print(f"Current Subj: {'<Null>' if cur_sbj == None else cur_sbj}")
 	elif check(0) == "HELP":
 		print(
 			"""
@@ -238,6 +254,7 @@ while True:
 	TODO         - Shows the todo lists
 	FINISHED     - Shows the finished lists
 	SAVE         - Saves the current state to a file (JSON)
+	RESAVE		 - Saves the current state to a file (JSON) using the file name from the most recent SAVE or LOAD command
 	LOAD         - Loads the save file (JSON)
 	QUIT         - Quits the program (WARNING: THE FILES WILL NOT SAVE)
 	INTERNAL     - Displays the internal information for debugging purposes
@@ -254,72 +271,5 @@ while True:
 """
 Command ideas
 
-
-ADD SUBJECT English II
-ADD SUBJECT Math
-
-INTO Math
-ADD HW Lesson 1: pg. 45-47
-ADD HW About me
-
-INTO English II
-ADD HW Finish Essay
-
-TODO
-```
-Date Added | Homework ID | Subject    | Homework
------------------------------------------------------------
-5/7/2020   | 0           | English II | Finish Essay
-5/1/2020   | 1           | Math       | About me
-12/2/2019  | 2           | Math       | Lesson 1: pg. 45-47
-```
-
-FINISH 1
-
-TODO
-```
-Homework ID | Subject    | Homework
--------------------------------------------
-0           | English II | Finish Essay
-2           | Math       | Lesson 1: pg. 45-47
-```
-
-FINISHED
-```
-Homework ID | Subject    | Homework
--------------------------------------------
-1           | Math       | About me
-```
-
-UNDO 1
-
-FINISHED
-```
-Homework ID | Subject    | Homework
--------------------------------------------
-```
-
-SAVE homework.data
-
-LOAD homework.data
-
-
-
-
-
-DELETE <Homework ID>  # this fully deletes the Homework into the Deleted database
-
-VIEW DELETE
-
-# This requires subject implied value too
-ADD EVENT Events No2
-
-
-
-"""
-
-"""
-Future implementations
-
-Merge saves?
+Porbably need a string?
 """
