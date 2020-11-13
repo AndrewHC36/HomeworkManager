@@ -1,5 +1,8 @@
 from datetime import date
 import json
+import time
+import sys
+import random
 
 
 E00_SYNTAX = "Syntax Error"
@@ -44,7 +47,7 @@ while True:
 				if cur_sbj != None:
 					if cur_sbj in sbj:
 						homework = " ".join(tkn[2:])
-						todo.append((str(date.today()), HW_ID, cur_sbj, homework, False))
+						todo.append([str(date.today()), HW_ID, cur_sbj, homework, False])
 						HW_ID += 1
 					else:
 						print("Invalid Subject")
@@ -159,18 +162,38 @@ while True:
 		else:
 			print("Empty Value")
 	elif check(0) == "TODO":
+		disp_data = ""
+		print("TODO Assignments:")
 		print("Date | Homework ID | Status | Subject | Homework")
+		
 		# statics gets printed first regardless of date
 		for hw_date, hw_id, subj, name, static in todo:
 			if static:
-				print(f"{hw_date}{' '*(13-len(hw_date))}{hw_id}{' '*(4-len(str(hw_id)))}{'STATIC'}{'  '}{subj}{' '*(2+len(max(sbj, key=lambda s: len(s)))-len(subj))}{name}")
+				disp_data += f"{hw_date}{' '*(13-len(hw_date))}{hw_id}{' '*(4-len(str(hw_id)))}{'STATIC'}{'  '}{subj}{' '*(2+len(max(sbj, key=lambda s: len(s)))-len(subj))}{name}\n"
 		for hw_date, hw_id, subj, name, static in todo:
 			if not static:
-				print(f"{hw_date}{' '*(13-len(hw_date))}{hw_id}{' '*(4-len(str(hw_id)))}{'      '}{'  '}{subj}{' '*(2+len(max(sbj, key=lambda s: len(s)))-len(subj))}{name}")
+				disp_data += f"{hw_date}{' '*(13-len(hw_date))}{hw_id}{' '*(4-len(str(hw_id)))}{'      '}{'  '}{subj}{' '*(2+len(max(sbj, key=lambda s: len(s)))-len(subj))}{name}\n"
+		for c in disp_data:			
+			time.sleep(0.01)
+			print(c, end="")
+			sys.stdout.flush()
 	elif check(0) == "FINISHED":
-		print("Date | Homework ID | Subject | Homework")
-		for i in compl:
-			print(i)
+		disp_data = ""
+		print("Finished Assignments:")
+		print("Date | Homework ID | Status | Subject | Homework")
+		
+		# statics gets printed first regardless of date
+		for hw_date, hw_id, subj, name, static in compl:
+			if static:
+				disp_data += f"{hw_date}{' '*(13-len(hw_date))}{hw_id}{' '*(4-len(str(hw_id)))}{'STATIC'}{'  '}{subj}{' '*(2+len(max(sbj, key=lambda s: len(s)))-len(subj))}{name}\n"
+		for hw_date, hw_id, subj, name, static in compl:
+			if not static:
+				disp_data += f"{hw_date}{' '*(13-len(hw_date))}{hw_id}{' '*(4-len(str(hw_id)))}{'      '}{'  '}{subj}{' '*(2+len(max(sbj, key=lambda s: len(s)))-len(subj))}{name}\n"
+		for c in disp_data:
+			d = [random.randint(0,1000) for i in range(1000)]
+			d_res = random.randint(0,1000) in d
+			sys.stdout.write(c)
+			sys.stdout.flush()
 	elif check(0) == "SAVE":
 		if check(1) != None:
 			"""
