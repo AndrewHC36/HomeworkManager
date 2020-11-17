@@ -39,8 +39,8 @@ print(
 	"*****************************\n"
 )
 
-sbj = []  # subject list
-todo = []  # todo list
+sbj = []    # subject list
+todo = []   # todo list
 compl = []  # completed list
 dscrd = []  # discarded list
 dscrd_date = []  # time of deletion of that hw assignment
@@ -51,12 +51,9 @@ loaded_fname = None
 
 
 def stat_name(dt):
-	if dt[0]:
-		return " STATIC     "
-	elif dt[1]:
-		return " ASSESSMENT "
-	else:
-		return "            "
+	if dt[0]:   return " STATIC     "
+	elif dt[1]: return " ASSESSMENT "
+	else:       return "            "
 
 
 while True:
@@ -67,8 +64,8 @@ while True:
 		break
 	tkn = inp.split(" ")
 	check = lambda ind: None if ind >= len(tkn) else tkn[ind].upper()
-	sbj_max_len = lambda fallback_list: len(max(sbj, key=lambda s: len(s))) if len(sbj) > 0 else len(
-		max(map(lambda i: i[2], fallback_list), key=lambda s: len(s)))
+	sbj_max_len = lambda fallback_list: len(max(sbj, key=lambda s: len(s))) \
+		if len(sbj) > 0 else len(max(map(lambda i: i[2], fallback_list), key=lambda s: len(s)))
 
 	if check(0) == "ADD":
 		if check(1) == "SUBJECT":
@@ -82,8 +79,7 @@ while True:
 				if cur_sbj != None:
 					if cur_sbj in sbj:
 						homework = " ".join(tkn[2:])
-						todo.append([str(date.today()), HW_ID, cur_sbj, homework,
-						             [False, False]])  # refer to Assignment Status Datatype
+						todo.append([str(date.today()), HW_ID, cur_sbj, homework, [False, False]])  # refer to Assignment Status Datatype
 						HW_ID += 1
 					else:
 						print("Invalid Subject")
@@ -93,8 +89,7 @@ while True:
 				print("Empty Value")
 		else:
 			print(E01_INV_CMD)
-	elif check(
-			0) == "SUBJECT-REMV":  # removes the subject from the listing, but will still show in historical assignments
+	elif check(0) == "SUBJECT-REMV":  # removes the subject from the listing, but will still show in historical assignments
 		if check(1) != None:
 			if 0 < sbj.count(tkn[1]):
 				sbj.remove(tkn[1])
@@ -212,10 +207,6 @@ while True:
 		print("Active TODO Assignments:")
 		print("|  Date  |  ID  | Status |  Subject  |  Homework")
 
-		# 1. Static
-		# 2. Assessment
-		# 3. Assignments
-
 		for hw_date, hw_id, subj, name, stat in todo:
 			if stat[0]:
 				disp_data += f"{hw_date}{' '*(13-len(hw_date))}{hw_id}{' '*(4-len(str(hw_id)))}{stat_name(stat)}{subj}{' '*(2+sbj_max_len(todo)-len(subj))}{name}\n"
@@ -307,8 +298,7 @@ while True:
 				json.dump(data, fbj)
 		else:
 			print("Cannot find the cached file name")
-	elif check(
-			0) == "LOAD":  # loading from a file resets all the previous states, so be sure to save before loading a new save
+	elif check(0) == "LOAD":  # loading from a file resets all the previous states, so be sure to save before loading a new save
 		if check(1) != None:
 			data = {}
 			with open(tkn[1], 'r') as fbj:
@@ -322,8 +312,7 @@ while True:
 				HW_ID = data["hw-id"]
 				dscrd = []
 				dscrd_date = []
-			elif data[
-				"version"] == 1:  # version 1 does not have multiple statuses, so we convert it to a tuple and added the new status as False
+			elif data["version"] == 1:  # version 1 does not have multiple statuses, so we convert it to a tuple and added the new status as False
 				sbj = data["subjects"]
 				todo = [i for i in map(lambda x: [x[0], x[1], x[2], x[3], (x[4], False)], data["todo"])]
 				compl = [i for i in map(lambda x: [x[0], x[1], x[2], x[3], (x[4], False)], data["completed"])]
@@ -380,4 +369,3 @@ while True:
 		)
 	else:
 		print(E00_SYNTAX)
-
