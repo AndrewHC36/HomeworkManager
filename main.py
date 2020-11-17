@@ -3,11 +3,10 @@ import json
 import time
 import sys
 import random
-import dataclasses
+
 
 """
 Mini Changelog (Documented Revision):
-
 Revision 1:
 	Note: Please do check HELP due to a lot of command renaming
 	- Printing: skips the delay when printing whitespaces
@@ -20,13 +19,10 @@ Revision 1:
 
 """
 Assignment Datatype and Ordering
-
 [Static, Assessment]
-
 1. Static
 2. Assessment
 3. Assignment <- the default status, so it does not shows under the status column
-
 Static: A status to set the assignment as some sort of a routine or a long-term assignment that won't be finished soon
 Assessment: A status for quizzes/exam/tests/essay, basically assignments that counts towards majority of your grade
 Assignment: A generic task or assignment
@@ -34,7 +30,6 @@ Assignment: A generic task or assignment
 
 E00_SYNTAX = "Syntax Error"
 E01_INV_CMD = "Invalid/Unkown Command"
-
 
 print(
 	"*****************************\n"
@@ -44,8 +39,8 @@ print(
 	"*****************************\n"
 )
 
-sbj = []    # subject list
-todo = []   # todo list
+sbj = []  # subject list
+todo = []  # todo list
 compl = []  # completed list
 dscrd = []  # discarded list
 dscrd_date = []  # time of deletion of that hw assignment
@@ -56,9 +51,12 @@ loaded_fname = None
 
 
 def stat_name(dt):
-	if dt[0]:   return " STATIC     "
-	elif dt[1]: return " ASSESSMENT "
-	else:       return "            "
+	if dt[0]:
+		return " STATIC     "
+	elif dt[1]:
+		return " ASSESSMENT "
+	else:
+		return "            "
 
 
 while True:
@@ -69,8 +67,9 @@ while True:
 		break
 	tkn = inp.split(" ")
 	check = lambda ind: None if ind >= len(tkn) else tkn[ind].upper()
-	sbj_max_len = lambda fallback_list: len(max(sbj, key=lambda s: len(s))) if len(sbj) > 0 else len(max(map(lambda i: i[2], fallback_list), key=lambda s: len(s)))
-	
+	sbj_max_len = lambda fallback_list: len(max(sbj, key=lambda s: len(s))) if len(sbj) > 0 else len(
+		max(map(lambda i: i[2], fallback_list), key=lambda s: len(s)))
+
 	if check(0) == "ADD":
 		if check(1) == "SUBJECT":
 			if check(2) != None:
@@ -83,7 +82,8 @@ while True:
 				if cur_sbj != None:
 					if cur_sbj in sbj:
 						homework = " ".join(tkn[2:])
-						todo.append([str(date.today()), HW_ID, cur_sbj, homework, [False, False]])  # refer to Assignment Status Datatype
+						todo.append([str(date.today()), HW_ID, cur_sbj, homework,
+						             [False, False]])  # refer to Assignment Status Datatype
 						HW_ID += 1
 					else:
 						print("Invalid Subject")
@@ -93,7 +93,8 @@ while True:
 				print("Empty Value")
 		else:
 			print(E01_INV_CMD)
-	elif check(0) == "SUBJECT-REMV":  # removes the subject from the listing, but will still show in historical assignments
+	elif check(
+			0) == "SUBJECT-REMV":  # removes the subject from the listing, but will still show in historical assignments
 		if check(1) != None:
 			if 0 < sbj.count(tkn[1]):
 				sbj.remove(tkn[1])
@@ -210,7 +211,7 @@ while True:
 		disp_data = ""
 		print("Active TODO Assignments:")
 		print("|  Date  |  ID  | Status |  Subject  |  Homework")
-		
+
 		# 1. Static
 		# 2. Assessment
 		# 3. Assignments
@@ -239,8 +240,8 @@ while True:
 		for c in disp_data:
 			if c not in [" ", "\t"]:
 				# just used for slowing down a little bit to emulate computer slowly loading text for cassette
-				d = [random.randint(0,1000) for i in range(1000)]
-				d_res = random.randint(0,1000) in d
+				d = [random.randint(0, 1000) for i in range(1000)]
+				d_res = random.randint(0, 1000) in d
 			sys.stdout.write(c)
 			sys.stdout.flush()
 	elif check(0) == "DISCARDED":
@@ -306,13 +307,14 @@ while True:
 				json.dump(data, fbj)
 		else:
 			print("Cannot find the cached file name")
-	elif check(0) == "LOAD":  # loading from a file resets all the previous states, so be sure to save before loading a new save
+	elif check(
+			0) == "LOAD":  # loading from a file resets all the previous states, so be sure to save before loading a new save
 		if check(1) != None:
 			data = {}
 			with open(tkn[1], 'r') as fbj:
 				data = json.load(fbj)
 			loaded_fname = tkn[1]
-			
+
 			if data["version"] == 0:  # version 0 does not support static, so it defaults to False
 				sbj = data["subjects"]
 				todo = [i for i in map(lambda x: [x[0], x[1], x[2], x[3], (False, False)], data["todo"])]
@@ -320,7 +322,8 @@ while True:
 				HW_ID = data["hw-id"]
 				dscrd = []
 				dscrd_date = []
-			elif data["version"] == 1:  # version 1 does not have multiple statuses, so we convert it to a tuple and added the new status as False
+			elif data[
+				"version"] == 1:  # version 1 does not have multiple statuses, so we convert it to a tuple and added the new status as False
 				sbj = data["subjects"]
 				todo = [i for i in map(lambda x: [x[0], x[1], x[2], x[3], (x[4], False)], data["todo"])]
 				compl = [i for i in map(lambda x: [x[0], x[1], x[2], x[3], (x[4], False)], data["completed"])]
@@ -352,7 +355,6 @@ while True:
 		print(
 			"""
  ******** Help Commands ********
-
  ADD SUBJECT ..... To add new subjects
  ADD HW ---------- To add new assignments under the currently specified subject
  SUBJECT-REMV .... To remove the subject from a list of registered subjects
@@ -372,17 +374,10 @@ while True:
  QUIT ............ Quits the program (Warning: the current state of program will not be saved if not saved)
  INTERNAL -------- Displays the internal datatype information for debugging purposes
  HELP ............ Displays the information of each commands used in this program (or help page)
-
  _______________________________
+ 
 	"""
 		)
 	else:
 		print(E00_SYNTAX)
-	
 
-
-"""
-Command ideas
-
-Porbably need a string?
-"""
